@@ -1,0 +1,23 @@
+{
+  "name": "feedback-service",
+  "version": "0.0.0",
+  "description": "Emails attendees and e-board members to request for feedback",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/techatnyu/feedback-service.git"
+  },
+  "author": "Tech@NYU",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/techatnyu/feedback-service/issues"
+  },
+  "homepage": "https://github.com/techatnyu/feedback-service",
+  "dependencies": {
+    "request-promise": "^0.4.2",
+    "sendgrid": "^1.7.0"
+  }
+}

@@ -46,9 +46,7 @@ class SurveyResponseCollection:
                 s['data']['relationships']['question']['data'] = {}
                 s['data']['relationships']['question']['data'] = { 'type': 'questions', 'id': qid }
                 s = json.dumps(s)
-                print s
                 r = requests.post('https://api.tnyu.org/v3/answers', headers=headers, data=s)
-                print r.text
                 r = json.loads(r.text)
                 answerId_collection.append(r['data']['id'])
             self.generate_surveyreponse(personId, answerId_collection)
@@ -106,3 +104,10 @@ class SurveyResponseCollection:
 # r = requests.get('https://api.tnyu.org/v3/' + 'answers/', headers=admin_headers)
 # r = requests.delete('https://api.tnyu.org/v3/' + 'survey-responses/' + '56381a3053a40a014ec062f3', headers=admin_headers)
 # print r.text
+
+# r = requests.get('https://api.tnyu.org/v3/answers', headers=admin_headers)
+# r = json.loads(r.text)
+# for answer in r['data']:
+#     if answer['attributes'].get('answer', None) == None:
+#         s = requests.delete('https://api.tnyu.org/v3/answers/' + answer['id'], headers=admin_headers)
+

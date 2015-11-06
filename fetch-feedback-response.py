@@ -95,19 +95,14 @@ class SurveyResponseCollection:
 
 
 
-# sample_survey = '5636e651aa1f71de52159511'
-# fetch_survey_response_typeform(sample_survey)
+sample_survey = '5636e651aa1f71de52159511'
+fetch_survey_response_typeform(sample_survey)
 
-# survey = SurveyResponse('AN1E2o')
-# print survey.answers_by_personId
+r = requests.get('https://api.tnyu.org/v3/survey-responses', headers=admin_headers)
+r = json.dumps(r.json(), indent=2)
+print r
 
-# r = requests.get('https://api.tnyu.org/v3/' + 'answers/', headers=admin_headers)
-# r = requests.delete('https://api.tnyu.org/v3/' + 'survey-responses/' + '56381a3053a40a014ec062f3', headers=admin_headers)
-# print r.text
-
-# r = requests.get('https://api.tnyu.org/v3/answers', headers=admin_headers)
-# r = json.loads(r.text)
-# for answer in r['data']:
-#     if answer['attributes'].get('answer', None) == None:
-#         s = requests.delete('https://api.tnyu.org/v3/answers/' + answer['id'], headers=admin_headers)
+r = requests.get('https://api.tnyu.org/v3/answers', headers=admin_headers)
+r = json.dumps(r.json(), indent=2)
+print r
 

@@ -2,6 +2,8 @@ import requests, json, secrets
 
 headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_key }
 
+admin_headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_admin_key }
+
 def post_question(text):
     q = {}
     q['data'] = {}
@@ -37,9 +39,28 @@ def post_survey(title, questions, addedby, form_uri, visible_to):
     r = json.loads(r.text)
     return r['data']['id']
 
+def patch_event(event_id, sid):
+    s = {}
+    s['data'] = {}
+    s['data']['attributes'] = {}
+    s['data']['type'] = 'events'
+    s['data']['id'] = event_id
+    s['data']['relationships'] = {}
+    s['data']['relationships']['survey'] = {}
+    s['data']['relationships']['survey']['data'] = { 'type': 'surveys', 'id': sid }
+    s = json.dumps(s)
+    r = requests.patch('https://api.tnyu.org/v3/events/' + event_id, data=s, headers=admin_headers, verify=False)
+    r = json.loads(r.text)
+    print r
+
+
 questions = ['5634fa8630cd1413fa0457a8','5634fc3439a6828e0248737b']
 addedBy = '544195bba07c236a039e9016'
 title = '[TESTING INFRA] Sample Survey'
 uri = 'https://julieycpan.typeform.com/to/AN1E2o'
 visible_to = ['PUBLIC', 'INFRASTRUCTURE']
+event_id = '561491ec9d262920f265190c'
+sid = '5636e651aa1f71de52159511'
+
+patch_event(event_id, sid)
 

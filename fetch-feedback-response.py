@@ -32,8 +32,8 @@ class SurveyResponseCollection:
             r = requests.get('https://api.tnyu.org/v3/people/' + personId, headers=headers)
             if r.status_code != 200: continue
 
-            answerId_collection = []
             for answerSet in self.answers_by_personId[personId]:
+                answerId_collection = []
                 for tid in answerSet.keys():
                     if tid not in self.typeformId_to_questionId: continue
                     qid = self.typeformId_to_questionId[tid]
@@ -55,7 +55,7 @@ class SurveyResponseCollection:
                         return
                     r = json.loads(r.text)
                     answerId_collection.append(r['data']['id'])
-            self.generate_surveyreponse(personId, answerId_collection)
+                self.generate_surveyreponse(personId, answerId_collection)
 
     def generate_surveyreponse(self, personId, answerIds):
         s = {}
@@ -112,8 +112,9 @@ class SurveyResponseCollection:
                 if question['attributes']['text'] == tq['question']:
                     self.typeformId_to_questionId[tq['id']] = question['id']
 
+personId = '54eb3fb77282d59a2b8bfa27'
 sample_survey = '5636e651aa1f71de52159511'
-# test_survey = '5647fddebba8046463890779'
+test_survey = '5647fddebba8046463890779'
 fetch_survey_responses_from_surveyId(test_survey)
 
 # r = requests.get('https://api.tnyu.org/v3/survey-responses', headers=admin_headers)

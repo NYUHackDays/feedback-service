@@ -4,10 +4,17 @@ import secrets
 import urlparse as ul
 
 # testing from db-backup
-headers = {'content-type': 'application/vnd.api+json',
-           'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_key}
-admin_headers = {'content-type': 'application/vnd.api+json',
-                 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_admin_key}
+headers = {
+    'content-type': 'application/vnd.api+json',
+    'accept': 'application/*, text/*',
+    'authorization': 'Bearer ' + secrets.tnyu_api_key
+}
+
+admin_headers = {
+    'content-type': 'application/vnd.api+json',
+    'accept': 'application/*, text/*',
+    'authorization': 'Bearer ' + secrets.tnyu_api_admin_key
+}
 
 
 def fetch_survey_response_typeform(survey_id):

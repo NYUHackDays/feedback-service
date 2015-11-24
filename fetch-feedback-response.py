@@ -8,6 +8,7 @@ headers = {
     'accept': 'application/*, text/*',
     'authorization': 'Bearer ' + secrets.tnyu_api_key
 }
+
 admin_headers = {
     'content-type': 'application/vnd.api+json',
     'accept': 'application/*, text/*',

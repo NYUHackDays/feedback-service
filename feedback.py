@@ -19,7 +19,7 @@ def getEmails(eventId, event_data, eboard_members, attendees):
 				attendees.append(post)
 	
 
-def sendEmails(event_data, eboard_members, attendees):
+def sendEmails(event_data, survey_link, eboard_members, attendees):
 	server = smtplib.SMTP('smtp.gmail.com', 587)
 	server.starttls()
 	server.login(secrets.tnyu_email, secrets.tnyu_email_password)
@@ -29,10 +29,10 @@ def sendEmails(event_data, eboard_members, attendees):
 		msg = "\r\n".join([
 			"From: " + secrets.tnyu_email,
 			"To: " + eboard_members[i]['attributes']['contact']['email'],
-			"Subject: Thank you for coming to Tech@NYU's" + event_data[0]['attributes']['title'],
+			"Subject: Thank you for coming to Tech@NYU's " + event_data[0]['attributes']['title'],
 			"",
 			'Hi, ' + eboard_members[i]['attributes']['name'] + '\n\n' +
-			'We would appreciate some feedback: https://julieycpan.typeform.com/to/AN1E2o?personId=' + eboard_members[i]['id']
+                        'Thanks for coming out! We\'d love to know how we could do better: ' + survey_link + '?personId=' + eboard_members[i]['id']
 		])
 		print msg
 		server.sendmail(secrets.tnyu_email, eboard_members[i]['attributes']['contact']['email'], msg)
@@ -40,30 +40,25 @@ def sendEmails(event_data, eboard_members, attendees):
 	for j in range (0, len(attendees)):
 		msg = "\r\n".join([
 			"From: " + secrets.tnyu_email,
-			"To: " + attendees[i]['attributes']['contact']['email'],
-			"Subject: Thank you for coming to Tech@NYU's" + event_data[0]['attributes']['title'],
+			"To: " + attendees[j]['attributes']['contact']['email'],
+			"Subject: Thank you for coming to Tech@NYU's " + event_data[0]['attributes']['title'],
 			"",
-			'Hi, ' + attendees[i]['attributes']['name'] + '\n' +
-			'Visit our website: https://julieycpan.typeform.com/to/AN1E2o?personId=' + attendees[i]['id']
+			'Hi, ' + attendees[j]['attributes']['name'] + '\n\n' +
+                        'Thanks for coming out! We\'d love to know how we could do better: ' + survey_link + '?personId=' + attendees[j]['id']
 		])
 		print msg
-		server.sendmail(secrets.tnyu_email, attendees[i]['attributes']['contact']['email'], msg)
+		server.sendmail(secrets.tnyu_email, attendees[j]['attributes']['contact']['email'], msg)
 		
-
 	server.quit()
-	
-
-
 
 def main():
-	#551482e3a3f1b49994cbc527
+        event_id = '5644e5e37af46de029dfb9f9'
 	eboard_members = []
 	attendees = []
-	event_data = []
-	getEmails('561491ec9d262920f265190c', event_data, eboard_members, attendees)#The current event is a test event that has only Mariano Salinas as the eboard attendee
-	sendEmails(event_data, eboard_members,attendees)
-
-
+        event_data = []
+        survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
+	getEmails(event_id, event_data, eboard_members, attendees)
+	sendEmails(event_data, survey_link, eboard_members, attendees)
 main()
     
 

@@ -68,7 +68,7 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             'Hi ' + attendees[j]['attributes']['name'] + '!\n\n' +
             'Thanks for coming out! We are constantly looking to improve ' +
             'on our events, and we would really appreciate it if you could ' +
-            ' take two minutes out of your day to fill out our feedback ' + 
+            ' take two minutes out of your day to fill out our feedback ' +
             'form. We\'d love to know how we could do better: ' +
             survey_link + '?rsvpId=' + attendees[j]['id'],
             '',

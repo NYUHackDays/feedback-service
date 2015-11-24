@@ -27,15 +27,21 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
 	for i in range (0, len(eboard_members)):
 
 		msg = "\r\n".join([
-			"From: " + secrets.tnyu_email,
-			"To: " + eboard_members[i]['attributes']['contact']['email'],
-			"Subject: Thank you for coming to Tech@NYU's " + event_data[0]['attributes']['title'],
-			"",
-			'Hi, ' + eboard_members[i]['attributes']['name'] + '\n\n' +
-                        'Thanks for coming out! We\'d love to know how we could do better: ' + survey_link + '?personId=' + eboard_members[i]['id']
+			'Hi, ' + eboard_members[j]['attributes']['name'] + '\n\n' +
+                        'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' + survey_link + '?personId=' + eboard_members[j]['id'],
+                        "",
+                        "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
+                        "Feel free to email hello@techatnyu.org if you have other questions or concerns.",
+                        "",
+                        "Thank you,",
+                        "Tech@NYU team"
 		])
 		print msg
-		server.sendmail(secrets.tnyu_email, eboard_members[i]['attributes']['contact']['email'], msg)
+                try:
+		    server.sendmail(secrets.tnyu_email, eboard_members[i]['attributes']['contact']['email'], msg)
+                except UnicodeEncodeError:
+                    continue
+
 
 	for j in range (0, len(attendees)):
 		msg = "\r\n".join([
@@ -44,10 +50,20 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
 			"Subject: Thank you for coming to Tech@NYU's " + event_data[0]['attributes']['title'],
 			"",
 			'Hi, ' + attendees[j]['attributes']['name'] + '\n\n' +
-                        'Thanks for coming out! We\'d love to know how we could do better: ' + survey_link + '?personId=' + attendees[j]['id']
+                        'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' + survey_link + '?personId=' + attendees[j]['id'],
+                        "",
+                        "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
+                        "Feel free to email hello@techatnyu.org if you have other questions or concerns.",
+                        "",
+                        "Thank you,",
+                        "Tech@NYU team"
 		])
 		print msg
-		server.sendmail(secrets.tnyu_email, attendees[j]['attributes']['contact']['email'], msg)
+                try:
+		    server.sendmail(secrets.tnyu_email, attendees[j]['attributes']['contact']['email'], msg)
+                except UnicodeEncodeError:
+                    print 'UnicodeEncodeError:' + attendees[j]
+                    continue
 		
 	server.quit()
 
@@ -57,6 +73,7 @@ def main():
 	attendees = []
         event_data = []
         survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
+        print attendees[0]
 	getEmails(event_id, event_data, eboard_members, attendees)
 	sendEmails(event_data, survey_link, eboard_members, attendees)
 main()

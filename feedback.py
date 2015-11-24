@@ -16,7 +16,9 @@ def getEmails(eventId, event_data, eboard_members, attendees):
     if (r.status_code != 200):
         return
     r = json.loads(r.text)
+
     event_data.append(r['data'])
+
     for post in r['included']:
         if post['attributes'].get('contact'):
             if post['attributes']['roles']:
@@ -25,46 +27,66 @@ def getEmails(eventId, event_data, eboard_members, attendees):
                 attendees.append(post)
 
 
-def sendEmails(event_data, eboard_members, attendees, typeform_url):
-    server = smtplib.SMTP('smtp.gmail.com:587')
+def sendEmails(event_data, survey_link, eboard_members, attendees):
+    server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(secrets.tnyu_email, secrets.tnyu_email_password)
 
     for i in range(0, len(eboard_members)):
+
         msg = "\r\n".join([
-            "From: " + secrets.tnyu_email,
-            "To: " + eboard_members[i]['attributes']['contact']['email'],
-            "Subject: Thank you for coming to Tech@NYU's " +
-            event_data[0]['attributes']['title'],
+            'Hi ' + eboard_members[j]['attributes']['name'] + '!\n\n' +
+            'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' +
+            survey_link + '?rsvpId=' + eboard_members[j]['id'],
             "",
-            'Hi, ' + eboard_members[i]['attributes']['name'] + '\n\n' +
-            'We would appreciate some feedback: ' + typeform_url +
-            '?personId=' + eboard_members[i]['id']
+            "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
+            "Feel free to email feedback@techatnyu.org if you have other questions or concerns.",
+            "",
+            "Thank you,",
+            "Tech@NYU team"
         ])
-        server.sendmail(secrets.tnyu_email, eboard_members[i][
-                        'attributes']['contact']['email'], msg)
+        print msg
+        try:
+            server.sendmail(secrets.tnyu_email, eboard_members[i][
+                            'attributes']['contact']['email'], msg)
+        except UnicodeEncodeError:
+            continue
 
     for j in range(0, len(attendees)):
         msg = "\r\n".join([
             "From: " + secrets.tnyu_email,
-            "To: " + attendees[i]['attributes']['contact']['email'],
+            "To: " + attendees[j]['attributes']['contact']['email'],
             "Subject: Thank you for coming to Tech@NYU's " +
             event_data[0]['attributes']['title'],
             "",
-            'Hi, ' + attendees[i]['attributes']['name'] + '\n' +
-            'Visit our website: ' + typeform_url +
-            '?personId=' + attendees[i]['id']
+            'Hi ' + attendees[j]['attributes']['name'] + '!\n\n' +
+            'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' +
+            survey_link + '?rsvpId=' + attendees[j]['id'],
+            "",
+            "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
+            "Feel free to email feedback@techatnyu.org if you have other questions or concerns.",
+            "",
+            "Thank you,",
+            "Tech@NYU team"
         ])
-        server.sendmail(secrets.tnyu_email, attendees[i][
-                        'attributes']['contact']['email'], msg)
+        print msg
+        try:
+            server.sendmail(secrets.tnyu_email, attendees[j][
+                            'attributes']['contact']['email'], msg)
+        except UnicodeEncodeError:
+            print 'UnicodeEncodeError:' + attendees[j]
+            continue
 
     server.quit()
 
-if __name__ == '__main__':
-    typeform_url = 'https://julieycpan.typeform.com/to/AN1E2o'
+
+def main():
+    event_id = '5644e5e37af46de029dfb9f9'
     eboard_members = []
     attendees = []
     event_data = []
-    getEmails('561491ec9d262920f265190c',
-              event_data, eboard_members, attendees)
-    sendEmails(event_data, eboard_members, attendees, typeform_url)
+    survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
+    print attendees[0]
+    getEmails(event_id, event_data, eboard_members, attendees)
+    sendEmails(event_data, survey_link, eboard_members, attendees)
+main()

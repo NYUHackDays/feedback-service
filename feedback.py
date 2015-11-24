@@ -35,15 +35,21 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
     for i in range(0, len(eboard_members)):
 
         msg = "\r\n".join([
-            'Hi ' + eboard_members[j]['attributes']['name'] + '!\n\n' +
-            'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' +
-            survey_link + '?rsvpId=' + eboard_members[j]['id'],
-            "",
-            "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
-            "Feel free to email feedback@techatnyu.org if you have other questions or concerns.",
-            "",
-            "Thank you,",
-            "Tech@NYU team"
+            'Hi ' + eboard_members[i]['attributes']['name'] + '!\n\n' +
+            'Thanks for coming out! We are constantly looking to improve ' +
+            'on our events, and we would really appreciate it if you ' +
+            'could take two minutes out of your day to fill out our' +
+            'feedback form. We\'d love to know how we could do better: ' +
+            survey_link + '?rsvpId=' + eboard_members[i]['id'],
+            '',
+            'Filling the form out will give us an idea of how everything ' +
+            'went and if there was something you really liked about the ' +
+            'event or something you did not like.\n',
+            'Feel free to email feedback@techatnyu.org if you have ' +
+            'other questions or concerns.',
+            '',
+            'Thank you,',
+            'Tech@NYU team'
         ])
         print msg
         try:
@@ -58,16 +64,22 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             "To: " + attendees[j]['attributes']['contact']['email'],
             "Subject: Thank you for coming to Tech@NYU's " +
             event_data[0]['attributes']['title'],
-            "",
+            '',
             'Hi ' + attendees[j]['attributes']['name'] + '!\n\n' +
-            'Thanks for coming out! We are constantly looking to improve on our events, and we would really appreciate it if you could take two minutes out of your day to fill out our feedback form. We\'d love to know how we could do better: ' +
+            'Thanks for coming out! We are constantly looking to improve ' +
+            'on our events, and we would really appreciate it if you could ' +
+            ' take two minutes out of your day to fill out our feedback ' + 
+            'form. We\'d love to know how we could do better: ' +
             survey_link + '?rsvpId=' + attendees[j]['id'],
-            "",
-            "Filling the form out will give us an idea of how everything went and if there was something you really liked about the event or something you did not like.\n",
-            "Feel free to email feedback@techatnyu.org if you have other questions or concerns.",
-            "",
-            "Thank you,",
-            "Tech@NYU team"
+            '',
+            'Filling the form out will give us an idea of how everything ' +
+            'went and if there was something you really liked about the ' +
+            'event or something you did not like.\n',
+            'Feel free to email feedback@techatnyu.org if you have other ' +
+            'questions or concerns.',
+            '',
+            'Thank you,',
+            'Tech@NYU team'
         ])
         print msg
         try:

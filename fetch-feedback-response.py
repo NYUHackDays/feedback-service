@@ -25,6 +25,7 @@ def fetch_survey_responses_from_surveyId(survey_id):
     uri_uid = r['data']['attributes']['URI'].split('/')[-1]
     survey = SurveyResponseCollection(
         survey_id, typeform_uri=uri_uid, typeform=True)
+    return survey
 
 
 class SurveyResponseCollection:
@@ -36,7 +37,7 @@ class SurveyResponseCollection:
         self.answers_by_personId = {}
         self.typeformId_to_questionId = {}
         self.is_typeform = False
-        if kwargs['typeform'] == True:
+        if kwargs['typeform'] is True:
             self.is_typeform = True
             self.get_typeform(kwargs['typeform_uri'])
             self.match_questions()
@@ -70,10 +71,13 @@ class SurveyResponseCollection:
                         'data'] = {'type': 'questions', 'id': qid}
                     s = json.dumps(s)
                     r = requests.post(
-                        'https://api.tnyu.org/v3/answers', headers=headers, data=s)
+                        'https://api.tnyu.org/v3/answers',
+                        headers=headers, data=s
+                    )
                     if r.status_code != 201:
                         print r.status_code
-                        print 'Can\'t genertate Answer for personId: ' + personId
+                        print('Can\'t genertate Answer for personId: ' +
+                              personId)
                         print json.dumps(r.json(), indent=2)
                         return
                     r = json.loads(r.text)
@@ -96,10 +100,17 @@ class SurveyResponseCollection:
         s['data']['relationships']['answers']['data'] = []
         for answerId in answerIds:
             s['data']['relationships']['answers']['data'].append(
-                {'type': 'answer', 'id': answerId})
+                {
+                    'type': 'answer',
+                    'id': answerId
+                }
+            )
         s = json.dumps(s)
         r = requests.post(
-            'https://api.tnyu.org/v3/survey-responses', headers=headers, data=s)
+            'https://api.tnyu.org/v3/survey-responses',
+            headers=headers,
+            data=s
+        )
         if r.status_code != 201:
             print 'Can\'t genertate Survey Responses Failed'
         r = json.dumps(r.json(), indent=2)
@@ -107,7 +118,8 @@ class SurveyResponseCollection:
 
     def get_typeform(self, uid):
         r = requests.get('https://api.typeform.com/v0/form/' + uid +
-                         '?key=' + secrets.tnyu_typeform_key + '&completed=true')
+                         '?key=' + secrets.tnyu_typeform_key +
+                         '&completed=true')
         if r.status_code != 200:
             print 'Can\'t get Typeform API with uid: ' + uid
             print json.dumps(r.json(), indent=2)
@@ -121,7 +133,9 @@ class SurveyResponseCollection:
             parsed = ul.urlparse(meta['referer'])
             collector_by_personId[str(ul.parse_qs(parsed.query).get(
                 'personId', ['no_personId'])[0])] = response['answers']
-            # collector_by_personId[str(ul.parse_qs(parsed.query).get('rsvpId', ['no_personId'])[0])] = response['answers']
+            # parsed_query_string = str(ul.parse_qs(parsed.query))
+            # rsvpId = parsed_query_string.get('rsvpId', ['no_personId'])[0]
+            # collector_by_personId[rsvpId] = response['answers']
             # use second one for all events past 11/23
             if personId in collector_by_personId:
                 collector_by_personId[personId].append(response['answers'])
@@ -130,7 +144,10 @@ class SurveyResponseCollection:
         self.answers_by_personId = collector_by_personId
 
     def match_questions(self):
-        r = requests.get('https://api.tnyu.org/v3/questions/', headers=headers)
+        r = requests.get(
+            'https://api.tnyu.org/v3/questions/',
+            headers=headers
+        )
         if r.status_code != 200:
             print 'Can\'t get Question from Tech@NYU API'
             print json.dumps(r.json(), indent=2)
@@ -150,6 +167,9 @@ fetch_survey_responses_from_surveyId(test_survey)
 # r = json.dumps(r.json(), indent=2)
 # print r
 
-# r = requests.get('https://api.tnyu.org/v3/answers/56496122450d377295be7a14', headers=admin_headers)
+# r = requests.get(
+#     'https://api.tnyu.org/v3/answers/56496122450d377295be7a14',
+#     headers=admin_headers
+# )
 # r = json.dumps(r.json(), indent=2)
 # print r

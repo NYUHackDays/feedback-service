@@ -94,6 +94,8 @@ class SurveyResponseCollection:
             meta = response['metadata']
             parsed = ul.urlparse(meta['referer'])
             collector_by_personId[str(ul.parse_qs(parsed.query).get('personId', ['no_personId'])[0])] = response['answers']
+            # collector_by_personId[str(ul.parse_qs(parsed.query).get('rsvpId', ['no_personId'])[0])] = response['answers']
+            # use second one for all events past 11/23
             if personId in collector_by_personId:
                 collector_by_personId[personId].append(response['answers'])
             else:

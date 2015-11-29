@@ -44,11 +44,11 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             "Tech@NYU team"
             ])
         print msg
-        # try:
-        #     server.sendmail(secrets.tnyu_email, eboard_members[i]['attributes']['contact']['email'], msg)
-        # except UnicodeEncodeError:
-        #     print 'UnicodeEncodeError:' + eboard_members[j]
-        #     pass
+        try:
+            server.sendmail(secrets.tnyu_email, eboard_members[i]['attributes']['contact']['email'], msg)
+        except UnicodeEncodeError:
+            print 'UnicodeEncodeError:' + eboard_members[j]
+            pass
 
 
     for j in range (0, len(attendees)):
@@ -68,11 +68,11 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             "Tech@NYU team"
             ])
         print msg
-        # try:
-        #     server.sendmail(secrets.tnyu_email, attendees[j]['attributes']['contact']['email'], msg)
-        # except UnicodeEncodeError:
-        #     print 'UnicodeEncodeError:' + attendees[j]
-        #     pass
+        try:
+            server.sendmail(secrets.tnyu_email, attendees[j]['attributes']['contact']['email'], msg)
+        except UnicodeEncodeError:
+            print 'UnicodeEncodeError:' + attendees[j]
+            pass
 
     server.quit()
 

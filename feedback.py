@@ -26,12 +26,13 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
     server.login(secrets.tnyu_email, secrets.tnyu_email_password)
 
     for i in range (0, len(eboard_members)):
-
         firstname = eboard_members[i]['attributes']['name'].split()[0].capitalize()
+        email = eboard_members[i]['attributes']['contact'].get('email', None)
+        if email == None: continue
 
         msg = "\r\n".join([
             "From: " + secrets.tnyu_email,
-            "To: " + attendees[i]['attributes']['contact']['email'],
+            "To: " + eboard_members[i]['attributes']['contact']['email'],
             "Subject: Thank you for coming to Tech@NYU's " + event_data[0]['attributes']['title'],
             "",
             'Hi ' + firstname + '!\n\n' +
@@ -53,6 +54,8 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
 
     for j in range (0, len(attendees)):
         firstname = attendees[j]['attributes']['name'].split()[0].capitalize()
+        email = attendees[j]['attributes']['contact'].get('email', None)
+        if email == None: continue
         msg = "\r\n".join([
             "From: " + secrets.tnyu_email,
             "To: " + attendees[j]['attributes']['contact']['email'],
@@ -77,11 +80,11 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
     server.quit()
 
 def main():
-    event_id = '5644e5e37af46de029dfb9f9'
+    event_id = '56411efc23be829f1901e788'
     eboard_members = []
     attendees = []
     event_data = []
-    survey_link = 'https://techatnyu.typeform.com/to/Aq5qMX'
+    survey_link = 'https://techatnyu.typeform.com/to/vXPXrJ'
     getEmails(event_id, event_data, eboard_members, attendees)
     sendEmails(event_data, survey_link, eboard_members, attendees)
 main()

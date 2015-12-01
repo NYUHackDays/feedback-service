@@ -37,32 +37,27 @@ def post_survey(title, questions, addedby, form_uri, visible_to):
     r = requests.post('https://api.tnyu.org/v3/surveys', data=s, headers=headers, verify=False)
     if r.status_code != 200: return
     r = json.loads(r.text)
+    print r
     return r['data']['id']
 
-# def patch_event(event_id, sid):
-#     s = {}
-#     s['data'] = {}
-#     s['data']['attributes'] = {}
-#     s['data']['type'] = 'events'
-#     s['data']['id'] = event_id
-#     s['data']['relationships'] = {}
-#     s['data']['relationships']['survey'] = {}
-#     s['data']['relationships']['survey']['data'] = { 'type': 'surveys', 'id': sid }
-#     s = json.dumps(s)
-#     r = requests.patch('https://api.tnyu.org/v3/events/' + event_id, data=s, headers=admin_headers, verify=False)
-#     r = json.loads(r.text)
-#     print r
-
-
-questions = ['5647fe7c9bf910ffbbcae5db', '5647fe3e781d026d0b77695b', '5647fe4b0dd50ccc027da8c1', '5647fe54c64745a657ec39d1', '5647fe685f92f23c34bc893b']
+questions = [
+'5647fe7c9bf910ffbbcae5db',
+'5647fe14f374f67c68805ff4',
+'5647fe1de409e792e71e14e0',
+'5647fe0d8599ac3a29754988',
+'565d0d7a71c5442e2b136378',
+'5647fe3e781d026d0b77695b',
+'5647fe4b0dd50ccc027da8c1',
+'5647fe54c64745a657ec39d1',
+'5647fe685f92f23c34bc893b'
+]
 addedBy = '544195bba07c236a039e9016'
-title = 'DesignDays Feedback: Getting Started with UX Design'
-uri = 'https://techatnyu.typeform.com/to/ElE6F5'
+title = 'HackDays Feedback: Intro to Ruby on Rails'
+uri = 'https://techatnyu.typeform.com/to/vXPXrJ'
 visible_to = ['TEAM_MEMBER']
-event_id = '5644e5e37af46de029dfb9f9'
-# sid = post_survey(title, questions, addedBy, uri, visible_to)
-# print sid
-sid = '565cf89dd63f91df12e14ebd'
+event_id = '56411efc23be829f1901e788'
+# post_survey(title, questions, addedBy, uri, visible_to)
+sid = '565d1088559f757f9d558d87'
 
 patch_event.patch_event(event_id, survey=sid)
 

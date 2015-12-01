@@ -97,7 +97,8 @@ class SurveyResponseCollection:
         for response in self.raw_responses:
             meta = response['metadata']
             parsed = ul.urlparse(meta['referer'])
-            personId = ul.parse_qs(parsed.query).get('personId')[0]
+            # personId = ul.parse_qs(parsed.query).get('personId')[0]
+            personId = ul.parse_qs(parsed.query).get('rsvpId')[0]
             val = collector_by_personId.get(personId, [])
             val.append(response['answers'])
             collector_by_personId[personId] = val

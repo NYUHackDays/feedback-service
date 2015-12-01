@@ -1,4 +1,4 @@
-import requests, json, secrets
+import requests, json, secrets, patch_event
 
 headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_key }
 
@@ -39,28 +39,30 @@ def post_survey(title, questions, addedby, form_uri, visible_to):
     r = json.loads(r.text)
     return r['data']['id']
 
-def patch_event(event_id, sid):
-    s = {}
-    s['data'] = {}
-    s['data']['attributes'] = {}
-    s['data']['type'] = 'events'
-    s['data']['id'] = event_id
-    s['data']['relationships'] = {}
-    s['data']['relationships']['survey'] = {}
-    s['data']['relationships']['survey']['data'] = { 'type': 'surveys', 'id': sid }
-    s = json.dumps(s)
-    r = requests.patch('https://api.tnyu.org/v3/events/' + event_id, data=s, headers=admin_headers, verify=False)
-    r = json.loads(r.text)
-    print r
+# def patch_event(event_id, sid):
+#     s = {}
+#     s['data'] = {}
+#     s['data']['attributes'] = {}
+#     s['data']['type'] = 'events'
+#     s['data']['id'] = event_id
+#     s['data']['relationships'] = {}
+#     s['data']['relationships']['survey'] = {}
+#     s['data']['relationships']['survey']['data'] = { 'type': 'surveys', 'id': sid }
+#     s = json.dumps(s)
+#     r = requests.patch('https://api.tnyu.org/v3/events/' + event_id, data=s, headers=admin_headers, verify=False)
+#     r = json.loads(r.text)
+#     print r
 
 
-questions = ['5634fa8630cd1413fa0457a8','5634fc3439a6828e0248737b']
+questions = ['5647fe7c9bf910ffbbcae5db', '5647fe3e781d026d0b77695b', '5647fe4b0dd50ccc027da8c1', '5647fe54c64745a657ec39d1', '5647fe685f92f23c34bc893b']
 addedBy = '544195bba07c236a039e9016'
-title = '[TESTING INFRA] Sample Survey'
-uri = 'https://julieycpan.typeform.com/to/AN1E2o'
-visible_to = ['PUBLIC', 'INFRASTRUCTURE']
-event_id = '561491ec9d262920f265190c'
-sid = '5636e651aa1f71de52159511'
+title = 'DesignDays Feedback: Getting Started with UX Design'
+uri = 'https://techatnyu.typeform.com/to/ElE6F5'
+visible_to = ['TEAM_MEMBER']
+event_id = '5644e5e37af46de029dfb9f9'
+# sid = post_survey(title, questions, addedBy, uri, visible_to)
+# print sid
+sid = '565cf89dd63f91df12e14ebd'
 
-patch_event(event_id, sid)
+patch_event.patch_event(event_id, survey=sid)
 

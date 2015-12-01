@@ -1,15 +1,20 @@
-import requests, json, secrets
+import requests, json, secrets, patch_event
 import urlparse as ul
 
 headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_key }
 admin_headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_admin_key }
 
-def fetch_survey_responses_from_surveyId(survey_id):
+def fetch_survey_responses_from_surveyId(survey_id, event_id=None):
     r = requests.get('https://api.tnyu.org/v3/surveys/' + survey_id, headers=headers)
-    if (r.status_code != 200): return
+    if int(r.status_code) != 200:
+        print r.status_code
+        return
     r = json.loads(r.text)
     uri_uid = r['data']['attributes']['URI'].split('/')[-1]
     survey = SurveyResponseCollection(survey_id, typeform_uri=uri_uid, typeform=True)
+    if event_id != None:
+        patch_event.patch_event(event_id, feedback=survey.surveyResponseIds)
+
 
 class SurveyResponseCollection:
     def __init__(self, surveyId, **kwargs):
@@ -18,6 +23,7 @@ class SurveyResponseCollection:
         self.raw_questions = []
         self.answers_by_personId = {}
         self.typeformId_to_questionId = {}
+        self.surveyResponseIds = []
         self.is_typeform = False
         if kwargs['typeform'] == True:
             self.is_typeform = True
@@ -27,13 +33,11 @@ class SurveyResponseCollection:
 
     def generate_answers_from_form(self):
         for personId in self.answers_by_personId.keys():
-            if personId is 'no_personId': continue
-
             r = requests.get('https://api.tnyu.org/v3/people/' + personId, headers=headers)
-            if r.status_code != 200: continue
+            if int(r.status_code) != 200: continue
 
+            answerId_collection = []
             for answerSet in self.answers_by_personId[personId]:
-                answerId_collection = []
                 for tid in answerSet.keys():
                     if tid not in self.typeformId_to_questionId: continue
                     qid = self.typeformId_to_questionId[tid]
@@ -55,7 +59,8 @@ class SurveyResponseCollection:
                         return
                     r = json.loads(r.text)
                     answerId_collection.append(r['data']['id'])
-                self.generate_surveyreponse(personId, answerId_collection)
+                surveyResponseId = self.generate_surveyreponse(personId, answerId_collection)
+                self.surveyResponseIds.append(surveyResponseId)
 
     def generate_surveyreponse(self, personId, answerIds):
         s = {}
@@ -73,16 +78,15 @@ class SurveyResponseCollection:
             s['data']['relationships']['answers']['data'].append({ 'type': 'answer', 'id': answerId })
         s = json.dumps(s)
         r = requests.post('https://api.tnyu.org/v3/survey-responses', headers=headers, data=s)
-        if r.status_code != 201:
+        if int(r.status_code) != 201:
             print 'Can\'t genertate Survey Responses Failed'
-        r = json.dumps(r.json(), indent=2)
-        print r
-
-
+        # r = json.dumps(r.json(), indent=2)
+        r = json.loads(r.text)
+        return r['data']['id']
 
     def get_typeform(self, uid):
         r = requests.get('https://api.typeform.com/v0/form/' + uid + '?key=' + secrets.tnyu_typeform_key + '&completed=true')
-        if r.status_code != 200:
+        if int(r.status_code) != 200:
             print 'Can\'t get Typeform API with uid: ' + uid
             print json.dumps(r.json(), indent=2)
             return
@@ -93,18 +97,15 @@ class SurveyResponseCollection:
         for response in self.raw_responses:
             meta = response['metadata']
             parsed = ul.urlparse(meta['referer'])
-            collector_by_personId[str(ul.parse_qs(parsed.query).get('personId', ['no_personId'])[0])] = response['answers']
-            # collector_by_personId[str(ul.parse_qs(parsed.query).get('rsvpId', ['no_personId'])[0])] = response['answers']
-            # use second one for all events past 11/23
-            if personId in collector_by_personId:
-                collector_by_personId[personId].append(response['answers'])
-            else:
-                collector_by_personId[personId] = []
+            personId = ul.parse_qs(parsed.query).get('personId')[0]
+            val = collector_by_personId.get(personId, [])
+            val.append(response['answers'])
+            collector_by_personId[personId] = val
         self.answers_by_personId = collector_by_personId
 
     def match_questions(self):
         r = requests.get('https://api.tnyu.org/v3/questions/', headers=headers)
-        if r.status_code != 200:
+        if int(r.status_code) != 200:
             print 'Can\'t get Question from Tech@NYU API'
             print json.dumps(r.json(), indent=2)
             return
@@ -114,10 +115,9 @@ class SurveyResponseCollection:
                 if question['attributes']['text'] == tq['question']:
                     self.typeformId_to_questionId[tq['id']] = question['id']
 
-personId = '54eb3fb77282d59a2b8bfa27'
-sample_survey = '5636e651aa1f71de52159511'
-test_survey = '5647fddebba8046463890779'
-fetch_survey_responses_from_surveyId(test_survey)
+survey = '565cf89dd63f91df12e14ebd'
+event_id = '5644e5e37af46de029dfb9f9'
+fetch_survey_responses_from_surveyId(survey, event_id=event_id)
 
 # r = requests.get('https://api.tnyu.org/v3/survey-responses', headers=admin_headers)
 # r = json.dumps(r.json(), indent=2)

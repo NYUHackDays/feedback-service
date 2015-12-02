@@ -1,8 +1,16 @@
-import requests, json, secrets, patch_event
+import requests
+import json
+import secrets
+import patch_event
 import urlparse as ul
 
-headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_key }
-admin_headers = {'content-type': 'application/vnd.api+json', 'accept': 'application/*, text/*', 'authorization': 'Bearer ' + secrets.tnyu_api_admin_key }
+headers = {'content-type': 'application/vnd.api+json',
+           'accept': 'application/*, text/*',
+           'authorization': 'Bearer ' + secrets.tnyu_api_key}
+admin_headers = {'content-type': 'application/vnd.api+json',
+                 'accept': 'application/*, text/*',
+                 'authorization': 'Bearer ' + secrets.tnyu_api_admin_key}
+
 
 def fetch_survey_responses_from_surveyId(survey_id, event_id=None):
     r = requests.get('https://api.tnyu.org/v3/surveys/' + survey_id, headers=headers)
@@ -12,7 +20,7 @@ def fetch_survey_responses_from_surveyId(survey_id, event_id=None):
     r = json.loads(r.text)
     uri_uid = r['data']['attributes']['URI'].split('/')[-1]
     survey = SurveyResponseCollection(survey_id, typeform_uri=uri_uid, typeform=True)
-    if event_id != None:
+    if event_id is not None:
         patch_event.patch_event(event_id, feedback=survey.surveyResponseIds)
 
 
@@ -34,12 +42,15 @@ class SurveyResponseCollection:
     def generate_answers_from_form(self):
         for personId in self.answers_by_personId.keys():
             r = requests.get('https://api.tnyu.org/v3/people/' + personId, headers=headers)
-            if int(r.status_code) != 200: continue
+            if int(r.status_code) != 200:
+                print r.status_code
+                continue
 
             answerId_collection = []
             for answerSet in self.answers_by_personId[personId]:
                 for tid in answerSet.keys():
-                    if tid not in self.typeformId_to_questionId: continue
+                    if tid not in self.typeformId_to_questionId:
+                        continue
                     qid = self.typeformId_to_questionId[tid]
                     s = {}
                     s['data'] = {}
@@ -49,7 +60,7 @@ class SurveyResponseCollection:
                     s['data']['relationships'] = {}
                     s['data']['relationships']['question'] = {}
                     s['data']['relationships']['question']['data'] = {}
-                    s['data']['relationships']['question']['data'] = { 'type': 'questions', 'id': qid }
+                    s['data']['relationships']['question']['data'] = {'type': 'questions', 'id': qid}
                     s = json.dumps(s)
                     r = requests.post('https://api.tnyu.org/v3/answers', headers=headers, data=s)
                     if r.status_code != 201:
@@ -119,12 +130,3 @@ class SurveyResponseCollection:
 survey = '565cf89dd63f91df12e14ebd'
 event_id = '5644e5e37af46de029dfb9f9'
 fetch_survey_responses_from_surveyId(survey, event_id=event_id)
-
-# r = requests.get('https://api.tnyu.org/v3/survey-responses', headers=admin_headers)
-# r = json.dumps(r.json(), indent=2)
-# print r
-
-# r = requests.get('https://api.tnyu.org/v3/answers/56496122450d377295be7a14', headers=admin_headers)
-# r = json.dumps(r.json(), indent=2)
-# print r
-

@@ -23,12 +23,13 @@ def post_question(text):
     q['data']['type'] = 'questions'
     q['data']['links'] = {}
     q = json.dumps(q)
-    r = requests.post('https://api.tnyu.org/v3/questions',
-                      data=q, headers=headers, verify=False)
-    print r.text
+    res = requests.post('https://api.tnyu.org/v3/questions',
+                        data=q, headers=headers, verify=False)
+
     if r.status_code != 200:
         return
-    r = json.loads(r.text)
+
+    r = res.json()
     return r['data']['id']
 
 
@@ -50,11 +51,11 @@ def post_survey(title, questions, addedby, form_uri, visible_to):
     s['data']['relationships']['addedBy'][
         'data'] = {'type': 'people', 'id': addedBy}
     s = json.dumps(s)
-    r = requests.post('https://api.tnyu.org/v3/surveys',
-                      data=s, headers=headers, verify=False)
+    res = requests.post('https://api.tnyu.org/v3/surveys',
+                        data=s, headers=headers, verify=False)
     if r.status_code != 200:
         return
-    r = json.loads(r.text)
+    r = res.json()
     return r['data']['id']
 
 
@@ -69,10 +70,9 @@ def patch_event(event_id, sid):
     s['data']['relationships']['survey'][
         'data'] = {'type': 'surveys', 'id': sid}
     s = json.dumps(s)
-    r = requests.patch('https://api.tnyu.org/v3/events/' +
-                       event_id, data=s, headers=admin_headers, verify=False)
-    r = json.loads(r.text)
-    print r
+    res = requests.patch('https://api.tnyu.org/v3/events/' +
+                         event_id, data=s, headers=admin_headers, verify=False)
+    r = res.json()
 
 
 questions = ['5634fa8630cd1413fa0457a8', '5634fc3439a6828e0248737b']

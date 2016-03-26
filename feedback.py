@@ -10,12 +10,14 @@ headers = {
 }
 
 
-def getEmails(eventId, event_data, eboard_members, attendees):
-    r = requests.get('https://api.tnyu.org/v3/events/' + eventId +
-                     '?include=attendees', headers=headers, verify=False)
-    if (r.status_code != 200):
+def get_emails(event_id, event_data, eboard_members, attendees):
+    res = requests.get('https://api.tnyu.org/v3/events/' + event_id +
+                       '?include=attendees', headers=headers, verify=False)
+
+    if r.status_code != 200:
         return
-    r = json.loads(r.text)
+
+    r = res.json()
 
     event_data.append(r['data'])
 
@@ -27,13 +29,12 @@ def getEmails(eventId, event_data, eboard_members, attendees):
                 attendees.append(post)
 
 
-def sendEmails(event_data, survey_link, eboard_members, attendees):
+def send_emails(event_data, survey_link, eboard_members, attendees):
     server = smtplib.SMTP('smtp.gmail.com', 587)
     server.starttls()
     server.login(secrets.tnyu_email, secrets.tnyu_email_password)
 
-    for i in range(0, len(eboard_members)):
-
+    for i, member in enumerate(eboard_members):
         msg = "\r\n".join([
             'Hi ' + eboard_members[i]['attributes']['name'] + '!\n\n' +
             'Thanks for coming out! We are constantly looking to improve ' +
@@ -51,14 +52,14 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             'Thank you,',
             'Tech@NYU team'
         ])
-        print msg
+
         try:
             server.sendmail(secrets.tnyu_email, eboard_members[i][
                             'attributes']['contact']['email'], msg)
         except UnicodeEncodeError:
             continue
 
-    for j in range(0, len(attendees)):
+    for i, attendee in enumerate(attendees):
         msg = "\r\n".join([
             "From: " + secrets.tnyu_email,
             "To: " + attendees[j]['attributes']['contact']['email'],
@@ -81,12 +82,11 @@ def sendEmails(event_data, survey_link, eboard_members, attendees):
             'Thank you,',
             'Tech@NYU team'
         ])
-        print msg
+
         try:
             server.sendmail(secrets.tnyu_email, attendees[j][
                             'attributes']['contact']['email'], msg)
         except UnicodeEncodeError:
-            print 'UnicodeEncodeError:' + attendees[j]
             continue
 
     server.quit()
@@ -99,6 +99,7 @@ def main():
     event_data = []
     survey_link = 'https://techatnyu.typeform.com/to/ElE6F5'
     print attendees[0]
-    getEmails(event_id, event_data, eboard_members, attendees)
-    sendEmails(event_data, survey_link, eboard_members, attendees)
+    get_emails(event_id, event_data, eboard_members, attendees)
+    send_emails(event_data, survey_link, eboard_members, attendees)
+
 main()
